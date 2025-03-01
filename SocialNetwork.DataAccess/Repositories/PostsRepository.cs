@@ -4,7 +4,7 @@ using SocialNetwork.DataAccess.Entities;
 
 namespace SocialNetwork.DataAccess.Repositories;
 
-public class PostsRepository
+public class PostsRepository : IPostsRepository
 {
     private readonly SocialNetworkDbContext _context;
 
@@ -31,22 +31,64 @@ public class PostsRepository
         return posts;
     }
 
-    public async Task<List<Post>> GetByAuthor(User author) 
+    public async Task<List<Post>> GetByAuthor(User author)
     {
         var postEntities = await _context.Posts
             .AsNoTracking()
+            .Where(p => p.AuthorId == author.Id)
             .ToListAsync();
 
         var posts = postEntities
-            .Select(p =>
-            {
-                User author = new(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio);
-
-                return new Post(p.Id, p.Title, p.Content, author, p.Topic);
-            })
+            .Select(p => new Post(
+                p.Id,
+                p.Title,
+                p.Content,
+                new User(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio),
+                p.Topic
+            ))
             .ToList();
 
         return posts;
+    }
+
+    public async Task<List<Post>> GetByTopic(Topic topic)
+    {
+        var postEntities = await _context.Posts
+            .AsNoTracking()
+            .Where(p => p.Topic.Equals(topic))
+            .ToListAsync();
+
+        var posts = postEntities
+            .Select(p => new Post(
+                p.Id,
+                p.Title,
+                p.Content,
+                new User(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio),
+                p.Topic
+            ))
+            .ToList();
+
+        return posts;
+    }
+
+    public async Task<List<Post>> GetByFilter(string searchValue)
+    {
+        var query = _context.Posts.AsNoTracking();
+
+        if (!string.IsNullOrEmpty(searchValue))
+        {
+            query = query.Where(p => p.Title.Contains(searchValue));
+        }
+
+        return await query
+        .Select(p => new Post(
+            p.Id,
+            p.Title,
+            p.Content,
+            new User(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio),
+            p.Topic
+        ))
+        .ToListAsync();
     }
 
     public async Task<Guid> Create(Post post)
@@ -84,7 +126,7 @@ public class PostsRepository
         return id;
     }
 
-    public async Task<Guid> Delete(Guid id) 
+    public async Task<Guid> Delete(Guid id)
     {
         await _context.Posts
             .Where(p => p.Id == id)
