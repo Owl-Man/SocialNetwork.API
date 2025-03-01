@@ -17,5 +17,8 @@ public class PostConfiguration : IEntityTypeConfiguration<PostEntity>
         builder.Property(p => p.Title)
             .HasMaxLength(Post.MaxTitleLength)
             .IsRequired();
+
+        builder.HasOne(p => p.Author)
+            .WithMany(p => p.Posts);
     }
 }
