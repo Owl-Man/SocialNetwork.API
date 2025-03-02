@@ -1,11 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using SocialNetwork.Application.Services;
 using SocialNetwork.DataAccess;
+using SocialNetwork.DataAccess.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddOpenApi();
 
 var configuration = builder.Configuration;
 
@@ -15,13 +19,24 @@ builder.Services.AddDbContext<SocialNetworkDbContext>(
         options.UseNpgsql(configuration.GetConnectionString(nameof(SocialNetworkDbContext)));
     });
 
+builder.Services.AddScoped<IPostsService, PostsService>();
+builder.Services.AddScoped<IPostsRepository, PostsRepository>();
+
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.MapOpenApi();
+
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "OpenAPI V1");
+    });
 }
 
 app.UseHttpsRedirection();

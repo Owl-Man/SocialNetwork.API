@@ -18,6 +18,7 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 
         builder.HasMany(u => u.Posts)
             .WithOne(p => p.Author)
-            .HasForeignKey(p => p.AuthorId);
+            .HasForeignKey(p => p.AuthorId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
