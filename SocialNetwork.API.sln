@@ -1,10 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35818.85 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.API", "SocialNetwork.API\SocialNetwork.API.csproj", "{5B582ED4-29F5-47D9-888A-437B3FCD9CAF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Core", "SocialNetwork.Core\SocialNetwork.Core.csproj", "{23A3926D-4682-476D-A30B-29243C627B6B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.DataAccess", "SocialNetwork.DataAccess\SocialNetwork.DataAccess.csproj", "{7F4DFE61-C474-43CC-B609-964FCBD2D98E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Application", "SocialNetwork.Application\SocialNetwork.Application.csproj", "{486A9EAD-38C4-43E9-A8AD-9356C2032AC7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +29,15 @@ Global
 		{7F4DFE61-C474-43CC-B609-964FCBD2D98E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F4DFE61-C474-43CC-B609-964FCBD2D98E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F4DFE61-C474-43CC-B609-964FCBD2D98E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{486A9EAD-38C4-43E9-A8AD-9356C2032AC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{486A9EAD-38C4-43E9-A8AD-9356C2032AC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{486A9EAD-38C4-43E9-A8AD-9356C2032AC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{486A9EAD-38C4-43E9-A8AD-9356C2032AC7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B2A4584E-DB33-45A3-8CF7-50977F85B115}
 	EndGlobalSection
 EndGlobal
