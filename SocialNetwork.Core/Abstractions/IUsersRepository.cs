@@ -4,6 +4,7 @@ namespace SocialNetwork.DataAccess.Repositories
 {
     public interface IUsersRepository
     {
+        Task<List<User>> GetAll();
         Task<User?> GetById(Guid id);
         Task<List<User>> GetWithPosts(Guid id);
         Task<Guid> Create(User user);

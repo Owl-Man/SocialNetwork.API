@@ -12,6 +12,19 @@ public class UsersRepository : IUsersRepository
     {
         _context = context;
     }
+    
+    public async Task<List<User>> GetAll() 
+    {
+        var userEntities = await _context.Users
+            .AsNoTracking()
+            .ToListAsync();
+
+        var users = userEntities
+            .Select(u => new User(u.Id, u.FirstName, u.SecondName, u.Bio))
+            .ToList();
+
+        return users;
+    }
 
     public async Task<List<User>> GetWithPosts(Guid id)
     {

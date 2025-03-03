@@ -12,6 +12,11 @@ public class UserService : IUserService
         _usersRepository = usersRepository;
     }
 
+    public async Task<List<User>> GetAll() 
+    {
+        return await _usersRepository.GetAll();
+    }
+
     public async Task<User?> GetById(Guid id)
     {
         return await _usersRepository.GetById(id);
