@@ -38,7 +38,7 @@ public class PostsController(IPostsService postsService, IUserService userServic
     [HttpPost]
     public ActionResult<Guid> CreatePost([FromBody] PostsRequest request) 
     {
-        var (post, error) = Post.Create(Guid.NewGuid(), request.title, request.content, new User(Guid.NewGuid(), "First", "Second", "Bio"), request.topic);
+        var (post, error) = Post.Create(Guid.NewGuid(), request.title, request.content, userService.GetById(request.authorId), request.topic);
 
         if (!string.IsNullOrEmpty(error))
         {

@@ -123,13 +123,15 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
     {
         try
         {
-            var userEntity = new UserEntity()
+            /*var userEntity = new UserEntity()
             {
                 Id = post.Author.Id,
                 FirstName = post.Author.FirstName,
                 SecondName = post.Author.SecondName,
                 Bio = post.Author.Bio
-            };
+            };*/
+
+            var userEntity = context.Users.Find(post.Author.Id);
 
             var postEntity = new PostEntity()
             {
