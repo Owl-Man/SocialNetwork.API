@@ -4,12 +4,12 @@ namespace SocialNetwork.DataAccess.Repositories
 {
     public interface IPostsRepository
     {
-        Task<Guid> Create(Post post);
-        Task<Guid> Delete(Guid id);
-        Task<List<Post>> GetAll();
-        Task<List<Post>> GetByAuthor(User author);
-        Task<List<Post>> GetByFilter(string searchValue);
-        Task<List<Post>> GetByTopic(Topic topic);
-        Task<Guid> Update(Guid id, string title, string content);
+        Guid Create(Post post);
+        Guid Delete(Guid id);
+        List<Post> GetAll();
+        List<Post> GetByAuthor(User author);
+        List<Post> GetByFilter(string searchValue);
+        List<Post> GetByTopic(Topic topic);
+        Guid Update(Guid id, string title, string content);
     }
 }

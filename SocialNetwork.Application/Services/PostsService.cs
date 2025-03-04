@@ -12,38 +12,38 @@ public class PostsService : IPostsService
         _postsRepository = postsRepository;
     }
 
-    public async Task<List<Post>> GetAllPosts()
+    public List<Post> GetAllPosts()
     {
-        return await _postsRepository.GetAll();
+        return _postsRepository.GetAll();
     }
 
-    public async Task<List<Post>> GetByAuthor(User author)
+    public  List<Post> GetByAuthor(User author)
     {
-        return await _postsRepository.GetByAuthor(author);
+        return  _postsRepository.GetByAuthor(author);
     }
 
-    public async Task<List<Post>> GetByFilter(string searchValue)
+    public  List<Post> GetByFilter(string searchValue)
     {
-        return await _postsRepository.GetByFilter(searchValue);
+        return  _postsRepository.GetByFilter(searchValue);
     }
 
-    public async Task<List<Post>> GetByTopic(Topic topic)
+    public  List<Post> GetByTopic(Topic topic)
     {
-        return await _postsRepository.GetByTopic(topic);
+        return  _postsRepository.GetByTopic(topic);
     }
 
-    public async Task<Guid> CreatePost(Post post)
+    public  Guid CreatePost(Post post)
     {
-        return await _postsRepository.Create(post);
+        return  _postsRepository.Create(post);
     }
 
-    public async Task<Guid> UpdatePost(Guid id, string title, string content)
+    public  Guid UpdatePost(Guid id, string title, string content)
     {
-        return await _postsRepository.Update(id, title, content);
+        return  _postsRepository.Update(id, title, content);
     }
 
-    public async Task<Guid> DeletePost(Guid id)
+    public  Guid DeletePost(Guid id)
     {
-        return await _postsRepository.Delete(id);
+        return  _postsRepository.Delete(id);
     }
 }
