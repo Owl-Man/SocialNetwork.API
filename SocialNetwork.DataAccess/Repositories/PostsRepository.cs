@@ -5,9 +5,12 @@ using SocialNetwork.DataAccess.Entities;
 
 namespace SocialNetwork.DataAccess.Repositories;
 
-public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsRepository> logger) : IPostsRepository {
-    public List<Post> GetAll() {
-        try {
+public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsRepository> logger) : IPostsRepository
+{
+    public List<Post> GetAll() 
+    {
+        try 
+        {
             var postEntities = context.Posts
                 .Include(entity => entity.Author)
                 .AsNoTracking()
@@ -23,14 +26,17 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
 
             return posts;
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             logger.LogError(ex, "Ошибка при получении всех постов.");
             throw;
         }
     }
 
-    public List<Post> GetByAuthor(User author) {
-        try {
+    public List<Post> GetByAuthor(User author) 
+    {
+        try 
+        {
             var postEntities = context.Posts
                 .Include(entity => entity.Author)
                 .AsNoTracking()
@@ -49,7 +55,8 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
 
             return posts;
         }
-        catch (Exception ex) {
+        catch (Exception ex) 
+        {
             logger.LogError(ex, "Ошибка при получении постов автора {AuthorId}.", author.Id);
             throw;
         }
@@ -174,6 +181,7 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         try
         {
             var postEntity = context.Posts.Find(id);
+
             if (postEntity == null)
             {
                 logger.LogError("Не найден пост для удаления с ID {PostId}.", id);
