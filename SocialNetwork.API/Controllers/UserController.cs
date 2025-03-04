@@ -7,19 +7,12 @@ namespace SocialNetwork.API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UserController : ControllerBase
+public class UserController(IUserService userService) : ControllerBase
 {
-    private readonly IUserService _userService;
-
-    public UserController(IUserService userService)
-    {
-        _userService = userService;
-    }
-
     [HttpGet]
-    public async Task<ActionResult<List<PostsResponse>>> GetUsers() 
+    public ActionResult<List<UserResponse>> GetUsers() 
     {
-        var users = await _userService.GetAll();
+        var users = userService.GetAll();
 
         var response = users.Select(u => new UserResponse(u.Id, u.FirstName, u.SecondName, u.Bio));
 
@@ -27,11 +20,11 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> CreateUser([FromBody] UserRequest request) 
+    public ActionResult<Guid> CreateUser([FromBody] UserRequest request) 
     {
         var user = new User(Guid.NewGuid(), request.FirstName, request.SecondName, request.Bio);
 
-        var userID = await _userService.Create(user);
+        var userID = userService.Create(user);
 
         return Ok(userID);
     }

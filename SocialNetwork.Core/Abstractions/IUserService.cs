@@ -4,11 +4,11 @@ namespace SocialNetwork.Application.Services
 {
     public interface IUserService
     {
-        Task<List<User>> GetAll();
-        Task<Guid> Create(User user);
-        Task<Guid> Delete(Guid id);
-        Task<User?> GetById(Guid id);
-        Task<List<User>> GetWithPosts(Guid id);
-        Task<Guid> Update(Guid id, string firstName, string secondName, string bio);
+        List<User> GetAll();
+        Guid Create(User user);
+        Guid Delete(Guid id);
+        User? GetById(Guid id);
+        List<User> GetWithPosts(Guid id);
+        Guid Update(Guid id, string firstName, string secondName, string bio);
     }
 }

@@ -17,9 +17,9 @@ public class PostsService : IPostsService
         return _postsRepository.GetAll();
     }
 
-    public  List<Post> GetByAuthor(User author)
+    public  List<Post> GetByAuthor(Guid authorId)
     {
-        return  _postsRepository.GetByAuthor(author);
+        return  _postsRepository.GetByAuthor(authorId);
     }
 
     public  List<Post> GetByFilter(string searchValue)

@@ -7,7 +7,7 @@ namespace SocialNetwork.Application.Services
         Guid CreatePost(Post post);
         Guid DeletePost(Guid id);
         List<Post> GetAllPosts();
-        List<Post> GetByAuthor(User author);
+        List<Post> GetByAuthor(Guid authorId);
         List<Post> GetByFilter(string searchValue);
         List<Post> GetByTopic(Topic topic);
         Guid UpdatePost(Guid id, string title, string content);

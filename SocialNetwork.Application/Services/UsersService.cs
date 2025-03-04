@@ -12,33 +12,33 @@ public class UserService : IUserService
         _usersRepository = usersRepository;
     }
 
-    public async Task<List<User>> GetAll() 
+    public List<User> GetAll() 
     {
-        return await _usersRepository.GetAll();
+        return _usersRepository.GetAll();
     }
 
-    public async Task<User?> GetById(Guid id)
+    public User? GetById(Guid id)
     {
-        return await _usersRepository.GetById(id);
+        return _usersRepository.GetById(id);
     }
 
-    public async Task<List<User>> GetWithPosts(Guid id)
+    public List<User> GetWithPosts(Guid id)
     {
-        return await _usersRepository.GetWithPosts(id);
+        return _usersRepository.GetWithPosts(id);
     }
 
-    public async Task<Guid> Create(User user)
+    public Guid Create(User user)
     {
-        return await _usersRepository.Create(user);
+        return _usersRepository.Create(user);
     }
 
-    public async Task<Guid> Update(Guid id, string firstName, string secondName, string bio)
+    public Guid Update(Guid id, string firstName, string secondName, string bio)
     {
-        return await _usersRepository.Update(id, firstName, secondName, bio);
+        return _usersRepository.Update(id, firstName, secondName, bio);
     }
 
-    public async Task<Guid> Delete(Guid id)
+    public Guid Delete(Guid id)
     {
-        return await _usersRepository.Delete(id);
+        return _usersRepository.Delete(id);
     }
 }

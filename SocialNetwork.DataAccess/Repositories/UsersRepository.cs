@@ -1,91 +1,134 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SocialNetwork.Core.Models;
 using SocialNetwork.DataAccess.Entities;
 
 namespace SocialNetwork.DataAccess.Repositories;
 
-public class UsersRepository : IUsersRepository
+public class UsersRepository(SocialNetworkDbContext context, ILogger<UsersRepository> logger) : IUsersRepository
 {
-    private readonly SocialNetworkDbContext _context;
-
-    public UsersRepository(SocialNetworkDbContext context)
+    public List<User> GetAll() 
     {
-        _context = context;
-    }
-    
-    public async Task<List<User>> GetAll() 
-    {
-        var userEntities = await _context.Users
+        try
+        {
+            var userEntities = context.Users
             .AsNoTracking()
-            .ToListAsync();
-
-        var users = userEntities
-            .Select(u => new User(u.Id, u.FirstName, u.SecondName, u.Bio))
             .ToList();
 
-        return users;
+            var users = userEntities
+                .Select(u => new User(u.Id, u.FirstName, u.SecondName, u.Bio))
+                .ToList();
+
+            return users;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка получения всех пользователей.");
+            throw;
+        }
     }
 
-    public async Task<List<User>> GetWithPosts(Guid id)
+    public List<User> GetWithPosts(Guid id)
     {
-        var userEntities = await _context.Users
+        try
+        {
+            var userEntities = context.Users
             .AsNoTracking()
             .Where(u => u.Id == id)
             .Include(u => u.Posts)
-            .ToListAsync();
-
-        var users = userEntities
-            .Select(u => new User(u.Id, u.FirstName, u.SecondName, u.Bio))
             .ToList();
 
-        return users;
-    }
+            var users = userEntities
+                .Select(u => new User(u.Id, u.FirstName, u.SecondName, u.Bio))
+                .ToList();
 
-    public async Task<User?> GetById(Guid id)
-    {
-        var userEntity = await _context.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id);
-
-        var user = new User(userEntity.Id, userEntity.FirstName, userEntity.SecondName, userEntity.Bio);
-
-        return user;
-    }
-
-    public async Task<Guid> Create(User user)
-    {
-        var userEntity = new UserEntity()
+            return users;
+        }
+        catch (Exception ex)
         {
-            Id = user.Id,
-            FirstName = user.FirstName,
-            SecondName = user.SecondName,
-            Bio = user.Bio
-        };
-
-        await _context.Users.AddAsync(userEntity);
-        await _context.SaveChangesAsync();
-
-        return userEntity.Id;
+            logger.LogError(ex, "Ошибка получения всех пользователей.");
+            throw;
+        }
     }
-    public async Task<Guid> Update(Guid id, string firstName, string secondName, string bio)
+
+    public User? GetById(Guid id)
     {
-        await _context.Users
+        try
+        {
+            var userEntity = context.Users
+            .AsNoTracking()
+            .FirstOrDefault(u => u.Id == id);
+
+            var user = new User(userEntity.Id, userEntity.FirstName, userEntity.SecondName, userEntity.Bio);
+
+            return user;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при получении пользователя {UserId}.", id);
+            throw;
+        }
+    }
+
+    public Guid Create(User user)
+    {
+        try
+        {
+            var userEntity = new UserEntity()
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                SecondName = user.SecondName,
+                Bio = user.Bio
+            };
+
+            context.Users.AddAsync(userEntity);
+            context.SaveChangesAsync();
+
+            return userEntity.Id;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при создании пользователя с Id {UserId}.", user.Id);
+            throw;
+        }
+    }
+
+    public Guid Update(Guid id, string firstName, string secondName, string bio)
+    {
+        try
+        {
+            context.Users
             .Where(u => u.Id == id)
-            .ExecuteUpdateAsync(s => s
+            .ExecuteUpdate(s => s
                 .SetProperty(u => u.FirstName, u => firstName)
                 .SetProperty(u => u.SecondName, u => secondName)
                 .SetProperty(u => u.Bio, u => bio)
                 );
 
-        return id;
+            return id;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при обновлении пользователя с Id {UserId}.", id);
+            throw;
+        }
     }
 
-    public async Task<Guid> Delete(Guid id)
+    public Guid Delete(Guid id)
     {
-        await _context.Users
+        try
+        {
+            context.Users
             .Where(u => u.Id == id)
-            .ExecuteDeleteAsync();
+            .ExecuteDelete();
 
-        return id;
+            return id;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при удалении пользователя с Id {UserId}.", id);
+            throw;
+        }
     }
 }

@@ -9,7 +9,7 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
 {
     public List<Post> GetAll() 
     {
-        try 
+        try
         {
             var postEntities = context.Posts
                 .Include(entity => entity.Author)
@@ -33,14 +33,14 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         }
     }
 
-    public List<Post> GetByAuthor(User author) 
+    public List<Post> GetByAuthor(Guid authorId) 
     {
         try 
         {
             var postEntities = context.Posts
                 .Include(entity => entity.Author)
                 .AsNoTracking()
-                .Where(p => p.AuthorId == author.Id)
+                .Where(p => p.AuthorId == authorId)
                 .ToList();
 
             var posts = postEntities
@@ -57,7 +57,7 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         }
         catch (Exception ex) 
         {
-            logger.LogError(ex, "Ошибка при получении постов автора {AuthorId}.", author.Id);
+            logger.LogError(ex, "Ошибка при получении постов автора {AuthorId}.", authorId);
             throw;
         }
     }

@@ -7,10 +7,10 @@ namespace SocialNetwork.API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class PostsController(IPostsService postsService) : ControllerBase
+public class PostsController(IPostsService postsService, IUserService userService) : ControllerBase
 {
     [HttpGet]
-    public ActionResult<List<PostsResponse>> GetPosts() 
+    public ActionResult<List<PostsResponse>> GetPosts()
     {
         var posts = postsService.GetAllPosts();
 
@@ -19,15 +19,20 @@ public class PostsController(IPostsService postsService) : ControllerBase
         return Ok(response);
     }
 
-    /*[HttpGet("{id:guid")]
-    public async Task<ActionResult<List<PostsResponse>>> GetPostsById(Guid id)
+    [HttpGet("getByAuthorId")]
+    public ActionResult<List<PostsResponse>> GetPostsByAuthorId([FromQuery] Guid id)
     {
-        var posts = await _postsService.GetByAuthor();
+        var posts = postsService.GetByAuthor(id);
+
+        if (posts == null || !posts.Any())
+        {
+            return NotFound($"No posts found for author with id: {id}");
+        }
 
         var response = posts.Select(p => new PostsResponse(p.Id, p.Title, p.Content, p.AuthorId, p.Topic));
 
         return Ok(response);
-    }*/
+    }
 
 
     [HttpPost]
