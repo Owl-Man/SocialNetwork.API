@@ -17,6 +17,7 @@ public class PostsRepository : IPostsRepository
     {
         var postEntities = await _context.Posts
             .AsNoTracking()
+            .Include(u => u.Author)
             .ToListAsync();
 
         var posts = postEntities
@@ -35,6 +36,7 @@ public class PostsRepository : IPostsRepository
     {
         var postEntities = await _context.Posts
             .AsNoTracking()
+            .Include(u => u.Author)
             .Where(p => p.AuthorId == author.Id)
             .ToListAsync();
 
@@ -55,6 +57,7 @@ public class PostsRepository : IPostsRepository
     {
         var postEntities = await _context.Posts
             .AsNoTracking()
+            .Include(u => u.Author)
             .Where(p => p.Topic.Equals(topic))
             .ToListAsync();
 
@@ -80,7 +83,7 @@ public class PostsRepository : IPostsRepository
             query = query.Where(p => p.Title.Contains(searchValue));
         }
 
-        return await query
+        return await query.Include(u => u.Author)
         .Select(p => new Post(
             p.Id,
             p.Title,

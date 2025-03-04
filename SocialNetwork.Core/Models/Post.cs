@@ -10,7 +10,7 @@ public class Post
 
     public Guid AuthorId { get; }
 
-    public User Author { get; }
+    public User? Author { get; }
 
     public Topic Topic { get; set; }
 
