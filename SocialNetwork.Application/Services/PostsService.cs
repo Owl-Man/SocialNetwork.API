@@ -42,6 +42,11 @@ public class PostsService : IPostsService
         return  _postsRepository.Update(id, title, content);
     }
 
+    public List<Post> GetPostsByAuthorId(Guid authorId)
+    {
+        return _postsRepository.GetPostsByAuthorId(authorId);
+    }
+
     public  Guid DeletePost(Guid id)
     {
         return  _postsRepository.Delete(id);

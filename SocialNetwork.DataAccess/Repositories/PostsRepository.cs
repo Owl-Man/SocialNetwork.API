@@ -169,6 +169,35 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         }
     }
 
+    public List<Post> GetPostsByAuthorId(Guid authorId)
+    {
+        try
+        {
+            var postEntities = context.Posts
+                .Include(entity => entity.Author)
+                .AsNoTracking()
+                .Where(p => p.AuthorId == authorId)
+                .ToList();
+
+            var posts = postEntities
+                .Select(p => new Post(
+                    p.Id,
+                    p.Title,
+                    p.Content,
+                    new User(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio),
+                    p.Topic
+                ))
+                .ToList();
+
+            return posts;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при получении постов автора с Id {AuthorId}.", authorId);
+            throw;
+        }
+    }
+
     public Guid Delete(Guid id)
     {
         try

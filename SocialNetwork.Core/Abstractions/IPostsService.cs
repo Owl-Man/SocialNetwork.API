@@ -11,5 +11,6 @@ namespace SocialNetwork.Application.Services
         List<Post> GetByFilter(string searchValue);
         List<Post> GetByTopic(Topic topic);
         Guid UpdatePost(Guid id, string title, string content);
+        List<Post> GetPostsByAuthorId(Guid authorId);
     }
 }
