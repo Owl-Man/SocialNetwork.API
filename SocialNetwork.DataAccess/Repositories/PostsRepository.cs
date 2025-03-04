@@ -12,7 +12,6 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
                 .Include(entity => entity.Author)
                 .AsNoTracking()
                 .ToList();
-
             var posts = postEntities
                 .Select(p =>
                 {
