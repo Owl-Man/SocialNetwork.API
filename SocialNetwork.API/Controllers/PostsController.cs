@@ -24,7 +24,7 @@ public class PostsController(IPostsService postsService, IUserService userServic
     {
         var posts = postsService.GetByAuthor(id);
 
-        if (posts == null || !posts.Any())
+        if (posts == null || posts.Count == 0)
         {
             return NotFound($"No posts found for author with id: {id}");
         }
@@ -34,9 +34,8 @@ public class PostsController(IPostsService postsService, IUserService userServic
         return Ok(response);
     }
 
-
     [HttpPost]
-    public ActionResult<Guid> CreatePost([FromBody] PostsRequest request) 
+    public ActionResult<Guid> CreatePost([FromBody] PostsRequest request)
     {
         var (post, error) = Post.Create(Guid.NewGuid(), request.title, request.content, userService.GetById(request.authorId), request.topic);
 

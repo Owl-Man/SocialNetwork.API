@@ -33,10 +33,10 @@ public class UsersRepository(SocialNetworkDbContext context, ILogger<UsersReposi
         try
         {
             var userEntities = context.Users
-            .AsNoTracking()
-            .Where(u => u.Id == id)
-            .Include(u => u.Posts)
-            .ToList();
+                .AsNoTracking()
+                .Where(u => u.Id == id)
+                .Include(u => u.Posts)
+                .ToList();
 
             var users = userEntities
                 .Select(u => new User(u.Id, u.FirstName, u.SecondName, u.Bio))
@@ -56,8 +56,8 @@ public class UsersRepository(SocialNetworkDbContext context, ILogger<UsersReposi
         try
         {
             var userEntity = context.Users
-            .AsNoTracking()
-            .FirstOrDefault(u => u.Id == id);
+                .AsNoTracking()
+                .FirstOrDefault(u => u.Id == id);
 
             var user = new User(userEntity.Id, userEntity.FirstName, userEntity.SecondName, userEntity.Bio);
 
