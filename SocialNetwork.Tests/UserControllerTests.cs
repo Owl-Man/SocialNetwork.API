@@ -54,9 +54,14 @@ public class UserControllerTests
 
         var result = userController.CreateUser(userRequest);
 
-        var actionResult = Assert.IsType<ActionResult<Guid>>(result);
-        var okResult = Assert.IsType<OkObjectResult>(actionResult.Result); 
-        logger.LogDebug("object result: {}", okResult.Value);
-        Assert.Equal(newUserId, okResult.Value); 
+        var actionResult = Assert.IsType<ActionResult<UserResponse>>(result); 
+        var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
+
+        var userResponse = Assert.IsType<UserResponse>(okResult.Value);
+        logger.LogDebug("userResponsePOST: {}", userResponse);
+        Assert.Equal(newUserId, userResponse.id); 
+        Assert.Equal("John", userResponse.FirstName); 
+        Assert.Equal("Doe", userResponse.SecondName); 
+        Assert.Equal("Bio1", userResponse.Bio); 
     }
 }

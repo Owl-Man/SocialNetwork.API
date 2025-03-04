@@ -20,12 +20,13 @@ public class UserController(IUserService userService) : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<Guid> CreateUser([FromBody] UserRequest request) 
+    public ActionResult<UserResponse> CreateUser([FromBody] UserRequest request) 
     {
         var user = new User(Guid.NewGuid(), request.FirstName, request.SecondName, request.Bio);
 
         var userID = userService.Create(user);
-
-        return Ok(userID);
+        var response = new UserResponse(userID, request.FirstName, request.SecondName, request.Bio);
+        
+        return Ok(response);
     }
 }
