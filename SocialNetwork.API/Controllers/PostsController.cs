@@ -26,10 +26,26 @@ public class PostsController : ControllerBase
         return Ok(response);
     }
 
+    /*[HttpGet("{id:guid")]
+    public async Task<ActionResult<List<PostsResponse>>> GetPostsById(Guid id)
+    {
+        var posts = await _postsService.GetByAuthor();
+
+        var response = posts.Select(p => new PostsResponse(p.Id, p.Title, p.Content, p.AuthorId, p.Topic));
+
+        return Ok(response);
+    }*/
+
+
     [HttpPost]
     public async Task<ActionResult<Guid>> CreatePost([FromBody] PostsRequest request) 
     {
-        var post = new Post(Guid.NewGuid(), request.title, request.content, new User(Guid.NewGuid(), "First", "Second", "Bio"), request.topic);
+        var (post, error) = Post.Create(Guid.NewGuid(), request.title, request.content, new User(Guid.NewGuid(), "First", "Second", "Bio"), request.topic);
+
+        if (!string.IsNullOrEmpty(error))
+        {
+            return BadRequest(error);
+        }
 
         var postId = await _postsService.CreatePost(post);
 

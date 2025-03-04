@@ -28,6 +28,20 @@ public class Post
         AuthorId = author.Id;
         Topic = topic;
     }
+
+    public static (Post post, string Error) Create(Guid id, string title, string content, User author, Topic topic) 
+    {
+        var error = string.Empty;
+
+        if (string.IsNullOrEmpty(title) || title.Length > MaxTitleLength)
+        {
+            error = "Title cannot be empty or longer then " + MaxTitleLength;
+        }
+
+        var post = new Post(id, title, content, author, topic);
+
+        return (post, error);
+    }
 }
 
 public enum Topic
