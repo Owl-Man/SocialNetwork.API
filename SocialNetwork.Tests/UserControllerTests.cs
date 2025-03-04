@@ -11,11 +11,17 @@ public class UserControllerTests
 {
     private readonly Mock<IUserService> mockUserService;
     private readonly UserController userController;
+    private readonly ILogger<UserControllerTests> logger;
 
     public UserControllerTests()
     {
         mockUserService = new Mock<IUserService>();
         userController = new UserController(mockUserService.Object);
+        logger = LoggerFactory.Create(builder =>
+        {
+            builder.SetMinimumLevel(LogLevel.Debug);
+            builder.AddConsole();
+        }).CreateLogger<UserControllerTests>();
     }
     
     [Fact]
@@ -34,6 +40,7 @@ public class UserControllerTests
         var actionResult = Assert.IsType<ActionResult<List<UserResponse>>>(result);
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result); 
         var returnUsers = Assert.IsType<List<UserResponse>>(okResult.Value);
+        logger.LogDebug("users object: {}", returnUsers);
         Assert.Equal(2, returnUsers.Count);
     }
 
@@ -49,6 +56,7 @@ public class UserControllerTests
 
         var actionResult = Assert.IsType<ActionResult<Guid>>(result);
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result); 
+        logger.LogDebug("object result: {}", okResult.Value);
         Assert.Equal(newUserId, okResult.Value); 
     }
 }
