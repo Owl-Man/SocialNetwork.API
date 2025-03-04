@@ -14,7 +14,7 @@ public class UserController(IUserService userService) : ControllerBase
     {
         var users = userService.GetAll();
 
-        var response = users.Select(u => new UserResponse(u.Id, u.FirstName, u.SecondName, u.Bio));
+        var response = users.Select(u => new UserResponse(u.Id, u.FirstName, u.SecondName, u.Bio)).ToList();
 
         return Ok(response);
     }
