@@ -60,7 +60,7 @@ public class UsersRepository(SocialNetworkDbContext context, ILogger<UsersReposi
                 .FirstOrDefault(u => u.Id == id);
 
             var user = new User(userEntity.Id, userEntity.FirstName, userEntity.SecondName, userEntity.Bio);
-
+            
             return user;
         }
         catch (Exception ex)

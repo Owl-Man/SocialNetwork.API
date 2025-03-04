@@ -14,18 +14,19 @@ public class UserController(IUserService userService) : ControllerBase
     {
         var users = userService.GetAll();
 
-        var response = users.Select(u => new UserResponse(u.Id, u.FirstName, u.SecondName, u.Bio));
+        var response = users.Select(u => new UserResponse(u.Id, u.FirstName, u.SecondName, u.Bio)).ToList();
 
         return Ok(response);
     }
 
     [HttpPost]
-    public ActionResult<Guid> CreateUser([FromBody] UserRequest request) 
+    public ActionResult<UserResponse> CreateUser([FromBody] UserRequest request) 
     {
         var user = new User(Guid.NewGuid(), request.FirstName, request.SecondName, request.Bio);
 
         var userID = userService.Create(user);
-
-        return Ok(userID);
+        var response = new UserResponse(userID, request.FirstName, request.SecondName, request.Bio);
+        
+        return Ok(response);
     }
 }

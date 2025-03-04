@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.DataAccess", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Application", "SocialNetwork.Application\SocialNetwork.Application.csproj", "{486A9EAD-38C4-43E9-A8AD-9356C2032AC7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Tests", "SocialNetwork.Tests\SocialNetwork.Tests.csproj", "{B35A953E-6B92-4832-BA41-FE5722B9CEFD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{486A9EAD-38C4-43E9-A8AD-9356C2032AC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{486A9EAD-38C4-43E9-A8AD-9356C2032AC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{486A9EAD-38C4-43E9-A8AD-9356C2032AC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B35A953E-6B92-4832-BA41-FE5722B9CEFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B35A953E-6B92-4832-BA41-FE5722B9CEFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B35A953E-6B92-4832-BA41-FE5722B9CEFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B35A953E-6B92-4832-BA41-FE5722B9CEFD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
