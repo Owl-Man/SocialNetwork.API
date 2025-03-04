@@ -1,137 +1,195 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SocialNetwork.Core.Models;
 using SocialNetwork.DataAccess.Entities;
 
 namespace SocialNetwork.DataAccess.Repositories;
 
-public class PostsRepository : IPostsRepository
-{
-    private readonly SocialNetworkDbContext _context;
+public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsRepository> logger) : IPostsRepository {
+    public List<Post> GetAll() {
+        try {
+            var postEntities = context.Posts
+                .Include(entity => entity.Author)
+                .AsNoTracking()
+                .ToList();
 
-    public PostsRepository(SocialNetworkDbContext context)
-    {
-        _context = context;
-    }
+            var posts = postEntities
+                .Select(p =>
+                {
+                    User author = new(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio);
 
-    public async Task<List<Post>> GetAll()
-    {
-        var postEntities = await _context.Posts
-            .AsNoTracking()
-            .ToListAsync();
+                    return new Post(p.Id, p.Title, p.Content, author, p.Topic);
+                })
+                .ToList();
 
-        var posts = postEntities
-            .Select(p =>
-            {
-                User author = new(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio);
-
-                return new Post(p.Id, p.Title, p.Content, author, p.Topic);
-            })
-            .ToList();
-
-        return posts;
-    }
-
-    public async Task<List<Post>> GetByAuthor(User author)
-    {
-        var postEntities = await _context.Posts
-            .AsNoTracking()
-            .Where(p => p.AuthorId == author.Id)
-            .ToListAsync();
-
-        var posts = postEntities
-            .Select(p => new Post(
-                p.Id,
-                p.Title,
-                p.Content,
-                new User(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio),
-                p.Topic
-            ))
-            .ToList();
-
-        return posts;
-    }
-
-    public async Task<List<Post>> GetByTopic(Topic topic)
-    {
-        var postEntities = await _context.Posts
-            .AsNoTracking()
-            .Where(p => p.Topic.Equals(topic))
-            .ToListAsync();
-
-        var posts = postEntities
-            .Select(p => new Post(
-                p.Id,
-                p.Title,
-                p.Content,
-                new User(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio),
-                p.Topic
-            ))
-            .ToList();
-
-        return posts;
-    }
-
-    public async Task<List<Post>> GetByFilter(string searchValue)
-    {
-        var query = _context.Posts.AsNoTracking();
-
-        if (!string.IsNullOrEmpty(searchValue))
-        {
-            query = query.Where(p => p.Title.Contains(searchValue));
+            return posts;
         }
-
-        return await query
-        .Select(p => new Post(
-            p.Id,
-            p.Title,
-            p.Content,
-            new User(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio),
-            p.Topic
-        ))
-        .ToListAsync();
+        catch (Exception ex) {
+            logger.LogError(ex, "Ошибка при получении всех постов.");
+            throw;
+        }
     }
 
-    public async Task<Guid> Create(Post post)
+    public List<Post> GetByAuthor(User author) {
+        try {
+            var postEntities = context.Posts
+                .Include(entity => entity.Author)
+                .AsNoTracking()
+                .Where(p => p.AuthorId == author.Id)
+                .ToList();
+
+            var posts = postEntities
+                .Select(p => new Post(
+                    p.Id,
+                    p.Title,
+                    p.Content,
+                    new User(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio),
+                    p.Topic
+                ))
+                .ToList();
+
+            return posts;
+        }
+        catch (Exception ex) {
+            logger.LogError(ex, "Ошибка при получении постов автора {AuthorId}.", author.Id);
+            throw;
+        }
+    }
+
+    public List<Post> GetByTopic(Topic topic)
     {
-        var userEntity = new UserEntity()
+        try
         {
-            Id = post.Author.Id,
-            FirstName = post.Author.FirstName,
-            SecondName = post.Author.SecondName,
-            Bio = post.Author.Bio
-        };
+            var postEntities = context.Posts
+                .Include(entity => entity.Author)
+                .AsNoTracking()
+                .Where(p => p.Topic.Equals(topic))
+                .ToList();
 
-        var postEntity = new PostEntity()
+            var posts = postEntities
+                .Select(p => new Post(
+                    p.Id,
+                    p.Title,
+                    p.Content,
+                    new User(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio),
+                    p.Topic
+                ))
+                .ToList();
+
+            return posts;
+        }
+        catch (Exception ex)
         {
-            Id = post.Id,
-            Title = post.Title,
-            Author = userEntity,
-            Content = post.Content
-        };
-
-        await _context.Posts.AddAsync(postEntity);
-        await _context.SaveChangesAsync();
-
-        return postEntity.Id;
+            logger.LogError(ex, "Ошибка при получении постов по теме {Topic}.", topic);
+            throw;
+        }
     }
 
-    public async Task<Guid> Update(Guid id, string title, string content)
+    public List<Post> GetByFilter(string searchValue)
     {
-        await _context.Posts
-            .Where(p => p.Id == id)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(p => p.Title, p => title)
-                .SetProperty(p => p.Content, p => content));
+        try
+        {
+            var query = context.Posts.AsNoTracking();
 
-        return id;
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                query = query.Where(p => p.Title.Contains(searchValue));
+            }
+
+            return query
+                .Select(p => new Post(
+                    p.Id,
+                    p.Title,
+                    p.Content,
+                    new User(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio),
+                    p.Topic
+                ))
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при получении постов по фильтру {SearchValue}.", searchValue);
+            throw;
+        }
     }
 
-    public async Task<Guid> Delete(Guid id)
+    public Guid Create(Post post)
     {
-        await _context.Posts
-            .Where(p => p.Id == id)
-            .ExecuteDeleteAsync();
+        try
+        {
+            var userEntity = new UserEntity()
+            {
+                Id = post.Author.Id,
+                FirstName = post.Author.FirstName,
+                SecondName = post.Author.SecondName,
+                Bio = post.Author.Bio
+            };
 
-        return id;
+            var postEntity = new PostEntity()
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Author = userEntity,
+                Content = post.Content
+            };
+
+            context.Posts.Add(postEntity);
+            context.SaveChanges();
+
+            return postEntity.Id;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при создании поста с Id {PostId}.", post.Id);
+            throw;
+        }
     }
+
+    public Guid Update(Guid id, string title, string content)
+    {
+        try
+        {
+            var postEntity = context.Posts.Find(id); 
+            if (postEntity == null)
+            {
+                logger.LogError("Не найден пост для обновления с ID {PostId}.", id);
+                throw new ArgumentException($"Не найден пост для обновления с ID {id}.");
+            }
+
+            postEntity.Title = title; 
+            postEntity.Content = content;
+
+            context.SaveChanges();
+
+            return id;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при обновлении поста с Id {PostId}.", id);
+            throw;
+        }
+    }
+
+    public Guid Delete(Guid id)
+    {
+        try
+        {
+            var postEntity = context.Posts.Find(id);
+            if (postEntity == null)
+            {
+                logger.LogError("Не найден пост для удаления с ID {PostId}.", id);
+                throw new ArgumentException($"Не найден пост для удаления с ID {id}.");
+            }
+
+            context.Posts.Remove(postEntity);
+            context.SaveChanges();
+
+            return id;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при удалении поста с Id {PostId}.", id);
+            throw;
+        }
+    } 
 }
