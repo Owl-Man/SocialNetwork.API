@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SocialNetwork.Core.Abstractions;
 using SocialNetwork.Core.Models;
 using SocialNetwork.DataAccess.Entities;
 
@@ -119,26 +120,17 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         }
     }
 
-    public Guid Create(Post post)
+    public Guid Create(Guid authorID, string title, string content, Topic topic)
     {
         try
         {
-            /*var userEntity = new UserEntity()
-            {
-                Id = post.Author.Id,
-                FirstName = post.Author.FirstName,
-                SecondName = post.Author.SecondName,
-                Bio = post.Author.Bio
-            };*/
-
-            var userEntity = context.Users.Find(post.Author.Id);
+            var userEntity = context.Users.FirstOrDefault(u => u.Id == authorID);
 
             var postEntity = new PostEntity()
             {
-                Id = post.Id,
-                Title = post.Title,
+                Title = title,
                 Author = userEntity,
-                Content = post.Content
+                Content = content
             };
 
             context.Posts.Add(postEntity);
@@ -148,7 +140,7 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Ошибка при создании поста с Id {PostId}.", post.Id);
+            logger.LogError(ex, "Ошибка при создании поста с title {title}.", title);
             throw;
         }
     }

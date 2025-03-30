@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 
 public class BaseTest
 {
-    
     private readonly ILogger<BaseTest> logger;
 
     public BaseTest()

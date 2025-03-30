@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using SocialNetwork.API.Contracts;
-using SocialNetwork.Application.Services;
 using SocialNetwork.API.Controllers;
 using SocialNetwork.Core.Models;
 using Xunit;
+using SocialNetwork.Core.Abstractions;
 
 namespace SocialNetwork.API.Tests;
 public class UserControllerTests

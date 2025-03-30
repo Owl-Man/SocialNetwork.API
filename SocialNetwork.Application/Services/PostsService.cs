@@ -1,5 +1,5 @@
-﻿using SocialNetwork.Core.Models;
-using SocialNetwork.DataAccess.Repositories;
+﻿using SocialNetwork.Core.Abstractions;
+using SocialNetwork.Core.Models;
 
 namespace SocialNetwork.Application.Services;
 
@@ -32,9 +32,9 @@ public class PostsService : IPostsService
         return  _postsRepository.GetByTopic(topic);
     }
 
-    public  Guid CreatePost(Post post)
+    public Guid CreatePost(Guid authorID, string title, string content, Topic topic)
     {
-        return  _postsRepository.Create(post);
+        return _postsRepository.Create(authorID, title, content, topic);
     }
 
     public  Guid UpdatePost(Guid id, string title, string content)

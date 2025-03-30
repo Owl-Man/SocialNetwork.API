@@ -1,5 +1,5 @@
-﻿using SocialNetwork.Core.Models;
-using SocialNetwork.DataAccess.Repositories;
+﻿using SocialNetwork.Core.Abstractions;
+using SocialNetwork.Core.Models;
 
 namespace SocialNetwork.Application.Services;
 
@@ -27,9 +27,9 @@ public class UserService : IUserService
         return _usersRepository.GetWithPosts(id);
     }
 
-    public Guid Create(User user)
+    public Guid Create(string firstName, string secondName, string bio)
     {
-        return _usersRepository.Create(user);
+        return _usersRepository.Create(firstName, secondName, bio);
     }
 
     public Guid Update(Guid id, string firstName, string secondName, string bio)

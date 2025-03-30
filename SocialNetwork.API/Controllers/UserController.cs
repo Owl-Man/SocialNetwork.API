@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.API.Contracts;
-using SocialNetwork.Application.Services;
+using SocialNetwork.Core.Abstractions;
 using SocialNetwork.Core.Models;
 
 namespace SocialNetwork.API.Controllers;
@@ -22,9 +22,7 @@ public class UserController(IUserService userService) : ControllerBase
     [HttpPost]
     public ActionResult<UserResponse> CreateUser([FromBody] UserRequest request) 
     {
-        var user = new User(Guid.NewGuid(), request.FirstName, request.SecondName, request.Bio);
-
-        var userID = userService.Create(user);
+        var userID = userService.Create(request.FirstName, request.SecondName, request.Bio);
         var response = new UserResponse(userID, request.FirstName, request.SecondName, request.Bio);
         
         return Ok(response);

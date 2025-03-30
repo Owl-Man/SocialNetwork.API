@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Application.Services;
+using SocialNetwork.Core.Abstractions;
 using SocialNetwork.DataAccess;
 using SocialNetwork.DataAccess.Repositories;
 

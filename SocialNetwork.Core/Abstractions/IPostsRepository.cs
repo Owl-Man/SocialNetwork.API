@@ -1,10 +1,10 @@
 ﻿using SocialNetwork.Core.Models;
 
-namespace SocialNetwork.DataAccess.Repositories
+namespace SocialNetwork.Core.Abstractions
 {
     public interface IPostsRepository
     {
-        Guid Create(Post post);
+        Guid Create(Guid authorID, string title, string content, Topic topic);
         Guid Delete(Guid id);
         List<Post> GetAll();
         List<Post> GetByAuthor(Guid authorId);

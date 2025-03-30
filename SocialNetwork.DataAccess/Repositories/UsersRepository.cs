@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SocialNetwork.Core.Abstractions;
 using SocialNetwork.Core.Models;
 using SocialNetwork.DataAccess.Entities;
 
@@ -70,16 +71,15 @@ public class UsersRepository(SocialNetworkDbContext context, ILogger<UsersReposi
         }
     }
 
-    public Guid Create(User user)
+    public Guid Create(string firstName, string secondName, string bio)
     {
         try
         {
             var userEntity = new UserEntity()
             {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                SecondName = user.SecondName,
-                Bio = user.Bio
+                FirstName = firstName,
+                SecondName = secondName,
+                Bio = bio
             };
 
             context.Users.AddAsync(userEntity);
@@ -89,7 +89,7 @@ public class UsersRepository(SocialNetworkDbContext context, ILogger<UsersReposi
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Ошибка при создании пользователя с Id {UserId}.", user.Id);
+            logger.LogError(ex, "Ошибка при создании пользователя: {firstName}", firstName);
             throw;
         }
     }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.API.Contracts;
-using SocialNetwork.Application.Services;
+using SocialNetwork.Core.Abstractions;
 using SocialNetwork.Core.Models;
 
 namespace SocialNetwork.API.Controllers;
@@ -37,14 +37,7 @@ public class PostsController(IPostsService postsService, IUserService userServic
     [HttpPost]
     public ActionResult<Guid> CreatePost([FromBody] PostsRequest request)
     {
-        var (post, error) = Post.Create(Guid.NewGuid(), request.title, request.content, userService.GetById(request.authorId), request.topic);
-
-        if (!string.IsNullOrEmpty(error))
-        {
-            return BadRequest(error);
-        }
-
-        var postId = postsService.CreatePost(post);
+        var postId = postsService.CreatePost(request.authorId, request.title, request.content, request.topic);
 
         return Ok(postId);
     }

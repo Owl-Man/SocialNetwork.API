@@ -1,10 +1,10 @@
 ﻿using SocialNetwork.Core.Models;
 
-namespace SocialNetwork.Application.Services
+namespace SocialNetwork.Core.Abstractions
 {
     public interface IPostsService
     {
-        Guid CreatePost(Post post);
+        Guid CreatePost(Guid authorID, string title, string content, Topic topic);
         Guid DeletePost(Guid id);
         List<Post> GetAllPosts();
         List<Post> GetByAuthor(Guid authorId);
