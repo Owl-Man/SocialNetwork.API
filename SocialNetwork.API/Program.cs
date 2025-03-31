@@ -24,7 +24,14 @@ builder.Services.AddScoped<IPostsService, PostsService>();
 builder.Services.AddScoped<IPostsRepository, PostsRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+
+builder.Services.AddScoped<UsersRepository>();
+builder.Services.AddScoped<IUsersRepository, CachedUserRepository>();
+
+builder.Services.AddStackExchangeRedisCache(redisOptions =>
+{
+    redisOptions.Configuration = builder.Configuration.GetConnectionString("Redis");
+});
 
 var app = builder.Build();
 

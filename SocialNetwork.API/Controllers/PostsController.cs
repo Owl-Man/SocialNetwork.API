@@ -19,7 +19,7 @@ public class PostsController(IPostsService postsService, IUserService userServic
         return Ok(response);
     }
 
-    [HttpGet("getByAuthorId")]
+    [HttpGet("GetByAuthorId")]
     public ActionResult<List<PostsResponse>> GetPostsByAuthorId([FromQuery] Guid id)
     {
         var posts = postsService.GetByAuthor(id);

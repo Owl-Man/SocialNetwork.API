@@ -9,13 +9,27 @@ namespace SocialNetwork.API.Controllers;
 [Route("[controller]")]
 public class UserController(IUserService userService) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("GetAllUsers")]
     public ActionResult<List<UserResponse>> GetUsers() 
     {
         var users = userService.GetAll();
 
         var response = users.Select(u => new UserResponse(u.Id, u.FirstName, u.SecondName, u.Bio)).ToList();
 
+        return Ok(response);
+    }
+
+    [HttpGet("GetUser")]
+    public ActionResult<UserResponse> GetUser(Guid id)
+    {
+        var user = userService.GetById(id);
+
+        if (user is null)
+        {
+            return NotFound();
+        }
+
+        var response = new UserResponse(user.Id, user.FirstName, user.SecondName, user.Bio);
         return Ok(response);
     }
 

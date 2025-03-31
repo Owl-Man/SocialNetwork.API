@@ -1,4 +1,3 @@
-version: "3.9"
 services:
     postgres:
         container_name: postgres
@@ -11,5 +10,14 @@ services:
             - postgres-data:/var/lib/postgresql/data
         ports:
             - "5432:5432"
+    redis:
+        container_name: redis
+        image: redis:latest
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis-data:/data
+        command: redis-server --requirepass redis_admin
 volumes:
     postgres-data:
+    redis-data:
