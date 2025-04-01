@@ -21,12 +21,14 @@ builder.Services.AddDbContext<SocialNetworkDbContext>(
     });
 
 builder.Services.AddScoped<IPostsService, PostsService>();
-builder.Services.AddScoped<IPostsRepository, PostsRepository>();
+
+builder.Services.AddScoped<PostsRepository>();
+builder.Services.AddScoped<IPostsRepository, CachedPostsRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<UsersRepository>();
-builder.Services.AddScoped<IUsersRepository, CachedUserRepository>();
+builder.Services.AddScoped<IUsersRepository, CachedUsersRepository>();
 
 builder.Services.AddStackExchangeRedisCache(redisOptions =>
 {

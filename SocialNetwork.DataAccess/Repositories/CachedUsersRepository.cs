@@ -5,12 +5,12 @@ using SocialNetwork.Core.Models;
 
 namespace SocialNetwork.DataAccess.Repositories;
 
-public class CachedUserRepository : IUsersRepository
+public class CachedUsersRepository : IUsersRepository
 {
     private readonly UsersRepository _decorated;
     private readonly IDistributedCache _distributedCache;
 
-    public CachedUserRepository(UsersRepository usersRepository, IDistributedCache distributedCache)
+    public CachedUsersRepository(UsersRepository usersRepository, IDistributedCache distributedCache)
     {
         _decorated = usersRepository;
         _distributedCache = distributedCache;
