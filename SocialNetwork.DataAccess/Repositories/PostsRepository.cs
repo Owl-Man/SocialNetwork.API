@@ -30,11 +30,11 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         catch (Exception ex)
         {
             logger.LogError(ex, "Ошибка при получении всех постов.");
-            throw;
+            return null;
         }
     }
 
-    public List<Post> GetByAuthor(Guid authorId) 
+    public List<Post>? GetByAuthor(Guid authorId) 
     {
         try 
         {
@@ -59,11 +59,11 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         catch (Exception ex) 
         {
             logger.LogError(ex, "Ошибка при получении постов автора {AuthorId}.", authorId);
-            throw;
+            return null;
         }
     }
 
-    public List<Post> GetByTopic(Topic topic)
+    public List<Post>? GetByTopic(Topic topic)
     {
         try
         {
@@ -88,11 +88,11 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         catch (Exception ex)
         {
             logger.LogError(ex, "Ошибка при получении постов по теме {Topic}.", topic);
-            throw;
+            return null;
         }
     }
 
-    public List<Post> GetByFilter(string searchValue)
+    public List<Post>? GetByFilter(string searchValue)
     {
         try
         {
@@ -116,7 +116,31 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         catch (Exception ex)
         {
             logger.LogError(ex, "Ошибка при получении постов по фильтру {SearchValue}.", searchValue);
-            throw;
+            return null;
+        }
+    }
+
+    public Post? GetById(Guid id)
+    {
+        try
+        {
+            var postEntity = context.Posts
+                .AsNoTracking()
+                .FirstOrDefault(u => u.Id == id);
+
+            var post = new Post(
+                    postEntity.Id,
+                    postEntity.Title,
+                    postEntity.Content,
+                    new User(postEntity.Author.Id, postEntity.Author.FirstName, postEntity.Author.SecondName, postEntity.Author.Bio),
+                    postEntity.Topic);
+
+            return post;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при получении поста {id}.", id);
+            return null;
         }
     }
 
@@ -145,15 +169,17 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         }
     }
 
-    public Guid Update(Guid id, string title, string content)
+    public Guid? Update(Guid id, string title, string content)
     {
         try
         {
-            var postEntity = context.Posts.Find(id); 
+            var postEntity = context.Posts
+                .FirstOrDefault(p => p.Id == id);
+
             if (postEntity == null)
             {
                 logger.LogError("Не найден пост для обновления с ID {PostId}.", id);
-                throw new ArgumentException($"Не найден пост для обновления с ID {id}.");
+                return null;
             }
 
             postEntity.Title = title; 
@@ -166,15 +192,17 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         catch (Exception ex)
         {
             logger.LogError(ex, "Ошибка при обновлении поста с Id {PostId}.", id);
-            throw;
+            return null;
         }
     }
 
-    public Guid Delete(Guid id)
+    public Guid? Delete(Guid id)
     {
         try
         {
-            var postEntity = context.Posts.Find(id);
+            var postEntity = context.Posts
+                .AsNoTracking()
+                .FirstOrDefault(p => p.Id == id);
 
             if (postEntity == null)
             {
@@ -190,7 +218,7 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         catch (Exception ex)
         {
             logger.LogError(ex, "Ошибка при удалении поста с Id {PostId}.", id);
-            throw;
+            return null;
         }
     } 
 }

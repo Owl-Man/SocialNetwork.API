@@ -47,7 +47,7 @@ public class UserControllerTests
     [Fact]
     public void CreateUser_ReturnsGuid()
     {
-        UserRequest userRequest = new UserRequest("John", "Doe", "Bio1");
+        CreateUserDataRequest userRequest = new CreateUserDataRequest("John", "Doe", "Bio1");
 
         var newUserId = Guid.NewGuid();
         mockUserService.Setup(service => service.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(newUserId);

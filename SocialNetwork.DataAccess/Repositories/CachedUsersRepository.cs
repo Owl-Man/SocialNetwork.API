@@ -18,8 +18,6 @@ public class CachedUsersRepository : IUsersRepository
 
     public Guid Create(string firstName, string secondName, string bio) => _decorated.Create(firstName, secondName, bio);
 
-    public Guid Delete(Guid id) => _decorated.Delete(id);
-
     public List<User> GetAll() => _decorated.GetAll();
 
     public User? GetById(Guid id)
@@ -40,18 +38,43 @@ public class CachedUsersRepository : IUsersRepository
             }
 
             _distributedCache.SetString(key, JsonConvert.SerializeObject(user));
-            cachedUser = _distributedCache.GetString(key);
         }
-
-        user = JsonConvert.DeserializeObject<User>(cachedUser, new JsonSerializerSettings
+        else
         {
-            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
-        });
+            user = JsonConvert.DeserializeObject<User>(cachedUser, new JsonSerializerSettings
+            {
+                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
+            });
+        }
 
         return user;
     }
 
     public List<User> GetWithPosts(Guid id) => _decorated.GetWithPosts(id);
 
-    public Guid Update(Guid id, string firstName, string secondName, string bio) => _decorated.Update(id, firstName, secondName, bio);
+    public Guid Update(Guid id, string firstName, string secondName, string bio)
+    {
+        TryDeleteUserFromCache(id);
+
+        return _decorated.Update(id, firstName, secondName, bio);
+    }
+
+    public Guid Delete(Guid id)
+    {
+        TryDeleteUserFromCache(id);
+
+        return _decorated.Delete(id);
+    }
+
+    private void TryDeleteUserFromCache(Guid id) 
+    {
+        string key = $"User-{id}";
+
+        string? cachedUser = _distributedCache.GetString(key);
+
+        if (!string.IsNullOrEmpty(cachedUser)) 
+        {
+            _distributedCache.Remove(key);
+        }
+    }
 }

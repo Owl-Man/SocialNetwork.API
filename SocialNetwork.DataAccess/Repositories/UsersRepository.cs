@@ -67,7 +67,7 @@ public class UsersRepository(SocialNetworkDbContext context, ILogger<UsersReposi
         catch (Exception ex)
         {
             logger.LogError(ex, "Ошибка при получении пользователя {UserId}.", id);
-            throw;
+            return null;
         }
     }
 

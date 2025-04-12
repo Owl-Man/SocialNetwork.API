@@ -16,19 +16,21 @@ public class CachedPostsRepository : IPostsRepository
         _distributedCache = distributedCache;
     }
 
-    public Guid Create(Guid authorID, string title, string content, Topic topic) => _decorated.Create(authorID, title, content, topic);
-
-    public Guid Delete(Guid id) => _decorated.Delete(id);
+    public Guid Create(Guid authorID, string title, string content, Topic topic)
+    {
+        TryDeletePostsFromCacheByAuthorid(authorID);
+        return _decorated.Create(authorID, title, content, topic);
+    }
 
     public List<Post> GetAll() => _decorated.GetAll();
 
-    public List<Post> GetByAuthor(Guid authorId)
+    public List<Post>? GetByAuthor(Guid authorId)
     {
-        string key = $"Post-withAuthor-{authorId}";
+        string key = $"Posts-withAuthor-{authorId}";
 
         string? cachedPosts = _distributedCache.GetString(key);
 
-        List<Post> posts;
+        List<Post>? posts;
 
         if (string.IsNullOrEmpty(cachedPosts))
         {
@@ -58,9 +60,42 @@ public class CachedPostsRepository : IPostsRepository
         return posts;
     }
 
-    public List<Post> GetByFilter(string searchValue) => _decorated.GetByFilter(searchValue);
+    public List<Post>? GetByFilter(string searchValue) => _decorated.GetByFilter(searchValue);
 
-    public List<Post> GetByTopic(Topic topic) => _decorated.GetByTopic(topic);
+    public List<Post>? GetByTopic(Topic topic) => _decorated.GetByTopic(topic);
 
-    public Guid Update(Guid id, string title, string content) => _decorated.Update(id, title, content);
+    public Guid? Update(Guid id, string title, string content)
+    {
+        TryDeletePostsFromCacheById(id);
+
+        return _decorated.Update(id, title, content);
+    }
+
+    public Guid? Delete(Guid id)
+    {
+        TryDeletePostsFromCacheById(id);
+        return _decorated.Delete(id);
+    }
+
+    private void TryDeletePostsFromCacheById(Guid id)
+    {
+        Post? post = _decorated.GetById(id);
+
+        if (post != null)
+        {
+            TryDeletePostsFromCacheByAuthorid(post.AuthorId);
+        }
+    }
+
+    private void TryDeletePostsFromCacheByAuthorid(Guid authorid)
+    {
+        string key = $"Posts-withAuthor-{authorid}";
+
+        string? cachedPosts = _distributedCache.GetString(key);
+
+        if (!string.IsNullOrEmpty(cachedPosts))
+        {
+            _distributedCache.Remove(key);
+        }
+    }
 }

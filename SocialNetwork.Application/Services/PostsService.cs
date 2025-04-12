@@ -17,17 +17,17 @@ public class PostsService : IPostsService
         return _postsRepository.GetAll();
     }
 
-    public  List<Post> GetByAuthor(Guid authorId)
+    public List<Post>? GetByAuthor(Guid authorId)
     {
-        return  _postsRepository.GetByAuthor(authorId);
+        return _postsRepository.GetByAuthor(authorId);
     }
 
-    public  List<Post> GetByFilter(string searchValue)
+    public List<Post>? GetByFilter(string searchValue)
     {
         return  _postsRepository.GetByFilter(searchValue);
     }
 
-    public  List<Post> GetByTopic(Topic topic)
+    public List<Post>? GetByTopic(Topic topic)
     {
         return  _postsRepository.GetByTopic(topic);
     }
@@ -37,12 +37,12 @@ public class PostsService : IPostsService
         return _postsRepository.Create(authorID, title, content, topic);
     }
 
-    public  Guid UpdatePost(Guid id, string title, string content)
+    public Guid? UpdatePost(Guid id, string title, string content)
     {
         return  _postsRepository.Update(id, title, content);
     }
 
-    public  Guid DeletePost(Guid id)
+    public Guid? DeletePost(Guid id)
     {
         return  _postsRepository.Delete(id);
     }
