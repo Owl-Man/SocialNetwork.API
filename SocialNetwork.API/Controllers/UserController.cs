@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.API.Contracts;
 using SocialNetwork.Core.Abstractions;
 using SocialNetwork.Core.Models;
@@ -19,7 +20,7 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("GetUser")]
+    [HttpGet("GetUserById")]
     public ActionResult<UserResponse> GetUser(Guid id)
     {
         var user = userService.GetById(id);
@@ -33,7 +34,7 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost]
+    [HttpPost("CreateUser")]
     public ActionResult<UserResponse> CreateUser([FromBody] UserRequest request) 
     {
         var userID = userService.Create(request.FirstName, request.SecondName, request.Bio);

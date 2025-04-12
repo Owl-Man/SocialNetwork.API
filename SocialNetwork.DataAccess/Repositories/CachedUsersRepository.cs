@@ -40,6 +40,7 @@ public class CachedUsersRepository : IUsersRepository
             }
 
             _distributedCache.SetString(key, JsonConvert.SerializeObject(user));
+            cachedUser = _distributedCache.GetString(key);
         }
 
         user = JsonConvert.DeserializeObject<User>(cachedUser, new JsonSerializerSettings
