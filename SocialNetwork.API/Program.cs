@@ -36,6 +36,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<UsersRepository>();
 builder.Services.AddScoped<IUsersRepository, CachedUsersRepository>();
 
+builder.Services.AddScoped<IFeedService, FeedService>();
+
 builder.Services.AddStackExchangeRedisCache(redisOptions =>
 {
     redisOptions.Configuration = builder.Configuration.GetConnectionString("Redis");

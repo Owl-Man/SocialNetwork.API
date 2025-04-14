@@ -10,6 +10,8 @@ namespace SocialNetwork.Core.Abstractions
         List<Post>? GetByAuthor(Guid authorId);
         List<Post>? GetByFilter(string searchValue);
         List<Post>? GetByTopic(Topic topic);
-        (Guid, string) Update(Guid id, string title, string content);
+        List<Post> GetByTopicsOnPage(List<Topic> topics, int page, int pageSize);
+        (Guid, string) Update(Guid id, string title, string content, Topic topic);
+        Task<(Guid, string)> VoteToPost(Guid id, bool isUpvote);
     }
 }

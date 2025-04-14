@@ -37,10 +37,14 @@ public class PostsService : IPostsService
         return _postsRepository.Create(authorID, title, content, topic);
     }
 
-    public (Guid, string) UpdatePost(Guid id, string title, string content)
+    public (Guid, string) UpdatePost(Guid id, string title, string content, Topic topic)
     {
-        return  _postsRepository.Update(id, title, content);
+        return  _postsRepository.Update(id, title, content, topic);
     }
+
+    public async Task<(Guid, string)> UpvoteToPost(Guid id) => await _postsRepository.VoteToPost(id, true);
+
+    public async Task<(Guid, string)> DownvoteToPost(Guid id) => await _postsRepository.VoteToPost(id, false);
 
     public Guid? DeletePost(Guid id)
     {

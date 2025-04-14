@@ -101,6 +101,40 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         }
     }
 
+    public List<Post> GetByTopicsOnPage(List<Topic> topics, int page, int pageSize)
+    {
+        try
+        {
+            var postEntities = context.Posts
+                .Include(entity => entity.Author)
+                .AsNoTracking()
+                .Where(p => topics.Contains(p.Topic))
+                .OrderByDescending(p => p.PublishTime)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var posts = postEntities
+                .Select(p => Post.Create(
+                    p.Id,
+                    p.Title,
+                    p.Content,
+                    User.Create(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio, p.Author.PreferredTopics).user,
+                    p.Topic,
+                    p.PublishTime,
+                    p.UpvotesNumber
+                ).post)
+                .ToList();
+
+            return posts;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при получении постов по темам {Topics}.", topics);
+            throw;
+        }
+    }
+
     public List<Post>? GetByFilter(string searchValue)
     {
         try
@@ -190,7 +224,7 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         }
     }
 
-    public (Guid, string) Update(Guid id, string title, string content)
+    public (Guid, string) Update(Guid id, string title, string content, Topic topic)
     {
         try
         {
@@ -210,6 +244,7 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
 
             postEntity.Title = title; 
             postEntity.Content = content;
+            postEntity.Topic = topic;
 
             context.SaveChanges();
 
@@ -218,6 +253,27 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         catch (Exception ex)
         {
             string error = $"Ошибка при обновлении поста с ID {id}";
+            logger.LogError(ex, error);
+            return (id, error);
+        }
+    }
+
+    public async Task<(Guid, string)> VoteToPost(Guid id, bool isUpvote)
+    {
+        try
+        {
+            int vote = isUpvote ? 1 : -1;
+            
+            await context.Posts
+                .Where(p => p.Id == id)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(p => p.UpvotesNumber, p => p.UpvotesNumber + vote));
+
+            return (id, "");
+        }
+        catch (Exception ex)
+        {
+            string error = $"Ошибка при обновлении пользователя с Id {id}";
             logger.LogError(ex, error);
             return (id, error);
         }

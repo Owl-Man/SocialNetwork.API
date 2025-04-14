@@ -19,7 +19,7 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("GetUserById")]
+    [HttpGet("GetUser")]
     public ActionResult<UserResponse> GetUser([FromBody] OnlyId idRequest)
     {
         User? user = userService.GetById(idRequest.Id);
@@ -80,7 +80,7 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(new OnlyId(userId.Value));
     }
 
-    [HttpDelete("DeleteUserById")]
+    [HttpDelete("DeleteUser")]
     public ActionResult<OnlyId> DeleteUser([FromBody] OnlyId idRequest) 
     {
         Guid? userId = userService.Delete(idRequest.Id);

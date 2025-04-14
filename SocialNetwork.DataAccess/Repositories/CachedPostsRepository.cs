@@ -64,11 +64,20 @@ public class CachedPostsRepository : IPostsRepository
 
     public List<Post>? GetByTopic(Topic topic) => _decorated.GetByTopic(topic);
 
-    public (Guid, string) Update(Guid id, string title, string content)
+    public List<Post> GetByTopicsOnPage(List<Topic> topics, int page, int pageSize) => _decorated.GetByTopicsOnPage(topics, page, pageSize);
+
+    public (Guid, string) Update(Guid id, string title, string content, Topic topic)
     {
         TryDeletePostsFromCacheById(id);
 
-        return _decorated.Update(id, title, content);
+        return _decorated.Update(id, title, content, topic);
+    }
+
+    public async Task<(Guid, string)> VoteToPost(Guid id, bool isUpvote)
+    {
+        TryDeletePostsFromCacheById(id);
+
+        return await _decorated.VoteToPost(id, isUpvote);
     }
 
     public Guid? Delete(Guid id)
