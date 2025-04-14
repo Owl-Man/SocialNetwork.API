@@ -27,17 +27,22 @@ public class UserService : IUserService
         return _usersRepository.GetWithPosts(id);
     }
 
-    public Guid Create(string firstName, string secondName, string bio)
+    public (Guid, string) Create(string firstName, string secondName, string bio)
     {
         return _usersRepository.Create(firstName, secondName, bio);
     }
 
-    public Guid Update(Guid id, string firstName, string secondName, string bio)
+    public (Guid, string) Update(Guid id, string firstName, string secondName, string bio, List<Topic> preferredTopics)
     {
-        return _usersRepository.Update(id, firstName, secondName, bio);
+        return _usersRepository.Update(id, firstName, secondName, bio, preferredTopics);
     }
 
-    public Guid Delete(Guid id)
+    public Guid? UpdatePreferredTopics(Guid id, List<Topic> preferredTopics)
+    {
+        return _usersRepository.UpdatePreferredTopics(id, preferredTopics);
+    }
+
+    public Guid? Delete(Guid id)
     {
         return _usersRepository.Delete(id);
     }

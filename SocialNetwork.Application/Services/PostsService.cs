@@ -12,7 +12,7 @@ public class PostsService : IPostsService
         _postsRepository = postsRepository;
     }
 
-    public List<Post> GetAllPosts()
+    public List<Post>? GetAllPosts()
     {
         return _postsRepository.GetAll();
     }
@@ -32,12 +32,12 @@ public class PostsService : IPostsService
         return  _postsRepository.GetByTopic(topic);
     }
 
-    public Guid CreatePost(Guid authorID, string title, string content, Topic topic)
+    public (Guid, string) CreatePost(Guid authorID, string title, string content, Topic topic)
     {
         return _postsRepository.Create(authorID, title, content, topic);
     }
 
-    public Guid? UpdatePost(Guid id, string title, string content)
+    public (Guid, string) UpdatePost(Guid id, string title, string content)
     {
         return  _postsRepository.Update(id, title, content);
     }

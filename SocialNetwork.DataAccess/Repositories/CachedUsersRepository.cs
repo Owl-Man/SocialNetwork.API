@@ -16,7 +16,7 @@ public class CachedUsersRepository : IUsersRepository
         _distributedCache = distributedCache;
     }
 
-    public Guid Create(string firstName, string secondName, string bio) => _decorated.Create(firstName, secondName, bio);
+    public (Guid, string) Create(string firstName, string secondName, string bio) => _decorated.Create(firstName, secondName, bio);
 
     public List<User> GetAll() => _decorated.GetAll();
 
@@ -52,14 +52,21 @@ public class CachedUsersRepository : IUsersRepository
 
     public List<User> GetWithPosts(Guid id) => _decorated.GetWithPosts(id);
 
-    public Guid Update(Guid id, string firstName, string secondName, string bio)
+    public (Guid, string) Update(Guid id, string firstName, string secondName, string bio, List<Topic> preferredTopics)
     {
         TryDeleteUserFromCache(id);
 
-        return _decorated.Update(id, firstName, secondName, bio);
+        return _decorated.Update(id, firstName, secondName, bio, preferredTopics);
     }
 
-    public Guid Delete(Guid id)
+    public Guid? UpdatePreferredTopics(Guid id, List<Topic> preferredTopics)
+    {
+        TryDeleteUserFromCache(id);
+
+        return _decorated.UpdatePreferredTopics(id, preferredTopics);
+    }
+
+    public Guid? Delete(Guid id)
     {
         TryDeleteUserFromCache(id);
 

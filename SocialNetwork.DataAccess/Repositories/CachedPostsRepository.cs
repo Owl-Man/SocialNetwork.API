@@ -16,7 +16,7 @@ public class CachedPostsRepository : IPostsRepository
         _distributedCache = distributedCache;
     }
 
-    public Guid Create(Guid authorID, string title, string content, Topic topic)
+    public (Guid, string) Create(Guid authorID, string title, string content, Topic topic)
     {
         TryDeletePostsFromCacheByAuthorid(authorID);
         return _decorated.Create(authorID, title, content, topic);
@@ -53,8 +53,8 @@ public class CachedPostsRepository : IPostsRepository
             //ONLY FOR TESTING API
             Post originPost = posts[0];
 
-            posts[0] = new Post(originPost.Id, "From redis cache: " + originPost.Title, originPost
-                .Content, originPost.Author, originPost.Topic);
+            posts[0] = Post.Create(originPost.Id, "From redis cache: " + originPost.Title, originPost
+                .Content, originPost.Author, originPost.Topic, originPost.PublishTime, originPost.UpvotesNumber).post;
         }
 
         return posts;
@@ -64,7 +64,7 @@ public class CachedPostsRepository : IPostsRepository
 
     public List<Post>? GetByTopic(Topic topic) => _decorated.GetByTopic(topic);
 
-    public Guid? Update(Guid id, string title, string content)
+    public (Guid, string) Update(Guid id, string title, string content)
     {
         TryDeletePostsFromCacheById(id);
 

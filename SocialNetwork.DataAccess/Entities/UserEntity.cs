@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using SocialNetwork.Core.Models;
 
 namespace SocialNetwork.DataAccess.Entities;
 
@@ -16,4 +17,6 @@ public class UserEntity
     public string Bio { get; set; } = string.Empty;
     
     public List<PostEntity> Posts { get; set; } = new();
+
+    public List<Topic> PreferredTopics { get; set; } = new();
 }

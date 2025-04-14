@@ -12,29 +12,39 @@ public class User
 
     public List<Post> Posts { get; } = new();
 
-    public User(Guid id, string firstName, string secondName, string bio)
-    {
-        if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(secondName))
-        {
-            //Error
-        }
+    public List<Topic> PreferredTopics { get; } = new();
 
+    public User(Guid id, string firstName, string secondName, string bio, List<Topic> preferredTopics)
+    {
         Id = id;
         FirstName = firstName;
         SecondName = secondName;
         Bio = bio;
+        PreferredTopics = preferredTopics;
     }
 
-    public static (User user, string Error) Create(Guid id, string firstName, string secondName, string bio)
+    public static (User user, string Error) Create(Guid id, string firstName, string secondName, string bio, List<Topic> preferredTopics)
     {
-        var error = string.Empty;
+        var error = CheckUserDataValid(firstName, secondName);
 
-        if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(secondName))
-        {
-            //Error
-        }
-        var user = new User(id, firstName, secondName, bio);
+        if (!string.IsNullOrEmpty(error)) return (new User(Guid.Empty, error, error, error, preferredTopics), error);
+
+        var user = new User(id, firstName, secondName, bio, preferredTopics);
 
         return (user, error);
+    }
+
+
+    public static string CheckUserDataValid(string firstName, string secondName)
+    {
+        if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(secondName))
+        {
+            if (string.IsNullOrEmpty(firstName))
+                return "Имя не может быть пустым";
+            else
+                return "Фамилия не может быть пустой";
+        }
+
+        return string.Empty;
     }
 }

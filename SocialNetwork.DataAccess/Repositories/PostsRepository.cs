@@ -8,7 +8,7 @@ namespace SocialNetwork.DataAccess.Repositories;
 
 public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsRepository> logger) : IPostsRepository
 {
-    public List<Post> GetAll() 
+    public List<Post>? GetAll() 
     {
         try
         {
@@ -19,9 +19,9 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
             var posts = postEntities
                 .Select(p =>
                 {
-                    User author = new(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio);
+                    User author = User.Create(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio, p.Author.PreferredTopics).user;
 
-                    return new Post(p.Id, p.Title, p.Content, author, p.Topic);
+                    return Post.Create(p.Id, p.Title, p.Content, author, p.Topic, p.PublishTime, p.UpvotesNumber).post;
                 })
                 .ToList();
 
@@ -38,20 +38,27 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
     {
         try 
         {
-            var postEntities = context.Posts
-                .Include(entity => entity.Author)
+            //var postEntities = context.Posts
+            //    .Include(entity => entity.Author)
+            //    .AsNoTracking()
+            //    .Where(p => p.AuthorId == authorId)
+            //    .ToList();
+
+            List<PostEntity> postEntities = context.Users
+                .Include(entity => entity.Posts)
                 .AsNoTracking()
-                .Where(p => p.AuthorId == authorId)
-                .ToList();
+                .FirstOrDefault(u => u.Id == authorId).Posts;
 
             var posts = postEntities
-                .Select(p => new Post(
+                .Select(p => Post.Create(
                     p.Id,
                     p.Title,
                     p.Content,
-                    new User(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio),
-                    p.Topic
-                ))
+                    User.Create(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio, p.Author.PreferredTopics).user,
+                    p.Topic,
+                    p.PublishTime,
+                    p.UpvotesNumber
+                ).post)
                 .ToList();
 
             return posts;
@@ -74,13 +81,15 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
                 .ToList();
 
             var posts = postEntities
-                .Select(p => new Post(
+                .Select(p => Post.Create(
                     p.Id,
                     p.Title,
                     p.Content,
-                    new User(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio),
-                    p.Topic
-                ))
+                    User.Create(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio, p.Author.PreferredTopics).user,
+                    p.Topic,
+                    p.PublishTime,
+                    p.UpvotesNumber
+                ).post)
                 .ToList();
 
             return posts;
@@ -104,13 +113,15 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
             }
 
             return query
-                .Select(p => new Post(
+                .Select(p => Post.Create(
                     p.Id,
                     p.Title,
                     p.Content,
-                    new User(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio),
-                    p.Topic
-                ))
+                    User.Create(p.Author.Id, p.Author.FirstName, p.Author.SecondName, p.Author.Bio, p.Author.PreferredTopics).user,
+                    p.Topic,
+                    p.PublishTime,
+                    p.UpvotesNumber
+                ).post)
                 .ToList();
         }
         catch (Exception ex)
@@ -128,12 +139,14 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
                 .AsNoTracking()
                 .FirstOrDefault(u => u.Id == id);
 
-            var post = new Post(
+            var post = Post.Create(
                     postEntity.Id,
                     postEntity.Title,
                     postEntity.Content,
-                    new User(postEntity.Author.Id, postEntity.Author.FirstName, postEntity.Author.SecondName, postEntity.Author.Bio),
-                    postEntity.Topic);
+                    User.Create(postEntity.Author.Id, postEntity.Author.FirstName, postEntity.Author.SecondName, postEntity.Author.Bio, postEntity.Author.PreferredTopics).user,
+                    postEntity.Topic,
+                    postEntity.PublishTime,
+                    postEntity.UpvotesNumber).post;
 
             return post;
         }
@@ -144,7 +157,7 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         }
     }
 
-    public Guid Create(Guid authorID, string title, string content, Topic topic)
+    public (Guid, string) Create(Guid authorID, string title, string content, Topic topic)
     {
         try
         {
@@ -153,14 +166,22 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
             var postEntity = new PostEntity()
             {
                 Title = title,
+                AuthorId = authorID,
                 Author = userEntity,
-                Content = content
+                Content = content,
+                Topic = topic,
+                PublishTime = DateTime.UtcNow,
+                UpvotesNumber = 0
             };
+
+            var error = Post.CheckPostDataValid(title);
+
+            if (!string.IsNullOrEmpty(error)) return (Guid.Empty, error);
 
             context.Posts.Add(postEntity);
             context.SaveChanges();
 
-            return postEntity.Id;
+            return (postEntity.Id, error);
         }
         catch (Exception ex)
         {
@@ -169,7 +190,7 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
         }
     }
 
-    public Guid? Update(Guid id, string title, string content)
+    public (Guid, string) Update(Guid id, string title, string content)
     {
         try
         {
@@ -178,21 +199,27 @@ public class PostsRepository(SocialNetworkDbContext context, ILogger<PostsReposi
 
             if (postEntity == null)
             {
-                logger.LogError("Не найден пост для обновления с ID {PostId}.", id);
-                return null;
+                string idError = $"Не найден пост для обновления с ID {id}";
+                logger.LogError(idError);
+                return (id, idError);
             }
+
+            var error = Post.CheckPostDataValid(title);
+
+            if (!string.IsNullOrEmpty(error)) return (Guid.Empty, error);
 
             postEntity.Title = title; 
             postEntity.Content = content;
 
             context.SaveChanges();
 
-            return id;
+            return (id, error);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Ошибка при обновлении поста с Id {PostId}.", id);
-            return null;
+            string error = $"Ошибка при обновлении поста с ID {id}";
+            logger.LogError(ex, error);
+            return (id, error);
         }
     }
 

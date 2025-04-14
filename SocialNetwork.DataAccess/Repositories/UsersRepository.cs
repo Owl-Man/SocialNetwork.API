@@ -17,7 +17,7 @@ public class UsersRepository(SocialNetworkDbContext context, ILogger<UsersReposi
             .ToList();
 
             var users = userEntities
-                .Select(u => new User(u.Id, u.FirstName, u.SecondName, u.Bio))
+                .Select(u => User.Create(u.Id, u.FirstName, u.SecondName, u.Bio, u.PreferredTopics).user)
                 .ToList();
 
             return users;
@@ -40,7 +40,7 @@ public class UsersRepository(SocialNetworkDbContext context, ILogger<UsersReposi
                 .ToList();
 
             var users = userEntities
-                .Select(u => new User(u.Id, u.FirstName, u.SecondName, u.Bio))
+                .Select(u => User.Create(u.Id, u.FirstName, u.SecondName, u.Bio, u.PreferredTopics).user)
                 .ToList();
 
             return users;
@@ -60,7 +60,7 @@ public class UsersRepository(SocialNetworkDbContext context, ILogger<UsersReposi
                 .AsNoTracking()
                 .FirstOrDefault(u => u.Id == id);
 
-            var user = new User(userEntity.Id, userEntity.FirstName, userEntity.SecondName, userEntity.Bio);
+            var user = User.Create(userEntity.Id, userEntity.FirstName, userEntity.SecondName, userEntity.Bio, userEntity.PreferredTopics).user;
             
             return user;
         }
@@ -71,7 +71,7 @@ public class UsersRepository(SocialNetworkDbContext context, ILogger<UsersReposi
         }
     }
 
-    public Guid Create(string firstName, string secondName, string bio)
+    public (Guid, string) Create(string firstName, string secondName, string bio)
     {
         try
         {
@@ -82,40 +82,71 @@ public class UsersRepository(SocialNetworkDbContext context, ILogger<UsersReposi
                 Bio = bio
             };
 
+            var error = User.CheckUserDataValid(firstName, secondName);
+
+            if (!string.IsNullOrEmpty(error)) return (Guid.Empty, error);
+
             context.Users.AddAsync(userEntity);
             context.SaveChangesAsync();
 
-            return userEntity.Id;
+            return (userEntity.Id, error);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Ошибка при создании пользователя: {firstName}", firstName);
-            throw;
+            string error = $"Ошибка при создании пользователя: {firstName}";
+            logger.LogError(ex, error);
+            return (Guid.Empty, error);
         }
     }
 
-    public Guid Update(Guid id, string firstName, string secondName, string bio)
+    public (Guid, string) Update(Guid id, string firstName, string secondName, string bio, List<Topic> preferredTopics)
     {
         try
         {
+            var error = User.CheckUserDataValid(firstName, secondName);
+
+            if (!string.IsNullOrEmpty(error)) return (Guid.Empty, error);
+
             context.Users
             .Where(u => u.Id == id)
             .ExecuteUpdate(s => s
                 .SetProperty(u => u.FirstName, u => firstName)
                 .SetProperty(u => u.SecondName, u => secondName)
                 .SetProperty(u => u.Bio, u => bio)
+                .SetProperty(u => u.PreferredTopics, u => preferredTopics)
                 );
 
+            return (id, error);
+        }
+        catch (Exception ex)
+        {
+            string error = $"Ошибка при обновлении пользователя с Id {id}";
+            logger.LogError(ex, error);
+            return (id, error);
+        }
+    }
+
+    public Guid? UpdatePreferredTopics(Guid id, List<Topic> preferredTopics)
+    {
+        try
+        {
+            var userEntity = context.Users
+                .FirstOrDefault(u => u.Id == id);
+
+            if (userEntity == null) return null;
+
+            userEntity.PreferredTopics = preferredTopics;
+            context.SaveChanges();
             return id;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Ошибка при обновлении пользователя с Id {UserId}.", id);
-            throw;
+            logger.LogError(ex, "Ошибка при обновлении предпочтительных тем пользователя с Id {UserId}.", id);
+            return null;
         }
     }
 
-    public Guid Delete(Guid id)
+    public Guid? Delete(Guid id)
     {
         try
         {
@@ -128,7 +159,7 @@ public class UsersRepository(SocialNetworkDbContext context, ILogger<UsersReposi
         catch (Exception ex)
         {
             logger.LogError(ex, "Ошибка при удалении пользователя с Id {UserId}.", id);
-            throw;
+            return null;
         }
     }
 }

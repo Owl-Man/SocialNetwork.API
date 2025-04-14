@@ -15,4 +15,6 @@ public class PostEntity
     public Guid AuthorId { get; set; }
     public UserEntity? Author { get; set; }
     public Topic Topic { get; set; }
+    public DateTime PublishTime { get; set; } = DateTime.UtcNow;
+    public int UpvotesNumber { get; set; } = 0;
 }

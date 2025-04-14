@@ -29,8 +29,8 @@ public class UserControllerTests
     {
         List<User> users = new List<User>
         {
-            new User(Guid.NewGuid(), "John", "Doe", "Bio1"),
-            new User(Guid.NewGuid(), "Jane", "Doe", "Bio2")
+            User.Create(Guid.NewGuid(), "John", "Doe", "Bio1").user,
+            User.Create(Guid.NewGuid(), "Jane", "Doe", "Bio2").user
         };
 
         mockUserService.Setup(service => service.GetAll()).Returns(users);
@@ -50,7 +50,7 @@ public class UserControllerTests
         CreateUserDataRequest userRequest = new CreateUserDataRequest("John", "Doe", "Bio1");
 
         var newUserId = Guid.NewGuid();
-        mockUserService.Setup(service => service.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(newUserId);
+        mockUserService.Setup(service => service.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns((newUserId, ""));
 
         var result = userController.CreateUser(userRequest);
 
