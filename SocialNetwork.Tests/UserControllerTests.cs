@@ -29,8 +29,8 @@ public class UserControllerTests
     {
         List<User> users = new List<User>
         {
-            User.Create(Guid.NewGuid(), "John", "Doe", "Bio1").user,
-            User.Create(Guid.NewGuid(), "Jane", "Doe", "Bio2").user
+            User.Create(Guid.NewGuid(), "John", "Doe", "Bio1", new List <Topic>()).user,
+            User.Create(Guid.NewGuid(), "Jane", "Doe", "Bio2", new List<Topic>()).user
         };
 
         mockUserService.Setup(service => service.GetAll()).Returns(users);

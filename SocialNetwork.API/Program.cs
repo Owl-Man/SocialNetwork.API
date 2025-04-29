@@ -45,7 +45,7 @@ builder.Services.AddStackExchangeRedisCache(redisOptions =>
 
 var app = builder.Build();
 
-//FOR TESTING ALLOWED ALL IN CORS
+//FOR TESTING ALLOWED ALL ADDRESSES CORS
 app.Use(async (context, next) =>
 {
     context.Response.Headers.Append("Access-Control-Allow-Origin", "*");

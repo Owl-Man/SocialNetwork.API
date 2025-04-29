@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Tests", "Soci
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4221EDDE-61AB-40ED-BD4E-21F8ADAE7012}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +52,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5B582ED4-29F5-47D9-888A-437B3FCD9CAF} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{23A3926D-4682-476D-A30B-29243C627B6B} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{7F4DFE61-C474-43CC-B609-964FCBD2D98E} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{486A9EAD-38C4-43E9-A8AD-9356C2032AC7} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{B35A953E-6B92-4832-BA41-FE5722B9CEFD} = {4221EDDE-61AB-40ED-BD4E-21F8ADAE7012}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B2A4584E-DB33-45A3-8CF7-50977F85B115}
